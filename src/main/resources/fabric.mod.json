@@ -1,25 +1,25 @@
 {
 	"schemaVersion": 1,
-	"id": "stats-api",
+	"id": "statsapi",
 	"version": "${version}",
 	"name": "stats-api",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Allows for player statistic to be accessible via an API",
 	"authors": [
-		"Me!"
+		"xhos"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/xhos/stats-api"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/stats-api/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.xhos.statsapi.Statsapi"
+			"net.xhos.statsapi.StatsApi"
 		],
 		"fabric-datagen": [
-			"net.xhos.statsapi.StatsapiDataGenerator"
+			"net.xhos.statsapi.StatsApiDataGenerator"
 		]
 	},
 	"mixins": [
