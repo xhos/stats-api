@@ -1,23 +1,50 @@
 package net.xhos.statsapi;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
+import com.mojang.brigadier.CommandDispatcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class StatsApi implements ModInitializer {
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final String MOD_ID = "statsapi";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	private static MinecraftServer server;
+	private static HttpServer httpServer;
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		LOGGER.info("Initializing StatsApi");
 
-		LOGGER.info("Hello Fabric world!");
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			LOGGER.info("Server started");
+			StatsApi.server = server;
+
+			httpServer = new HttpServer();
+			httpServer.start();
+		});
+
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			if (httpServer != null) {
+				httpServer.stop();
+			}
+		});
 	}
+
+	public static int executeCommand(String command) {
+		LOGGER.info("Executing command: " + command);
+		CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
+		try {
+			int result = dispatcher.execute("stats query " + command, server.getCommandSource());
+			LOGGER.info(""+ result);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("Failed to execute command", e);
+		}
+        return 0;
+    }
 }

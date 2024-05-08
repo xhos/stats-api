@@ -16,10 +16,16 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	mavenCentral()
 }
 
 fabricApi {
 	configureDataGeneration()
+}
+
+configurations {
+	// configuration that holds jars to include in the jar
+	extraLibs
 }
 
 dependencies {
@@ -30,7 +36,16 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	// Javelin. External package used for the web server.
+	implementation("io.javalin:javalin:${project.javalin_version}")
+	extraLibs("io.javalin:javalin:${project.javalin_version}")
+}
+
+jar {
+	from {
+		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+	}
 }
 
 processResources {
@@ -56,6 +71,7 @@ java {
 }
 
 jar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
@@ -69,6 +85,8 @@ publishing {
 			from components.java
 		}
 	}
+
+
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
