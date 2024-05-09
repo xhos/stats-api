@@ -1,6 +1,8 @@
 package net.xhos.statsapi;
 
 import io.javalin.Javalin;
+
+import java.util.Collection;
 import java.util.logging.Logger;
 
 public class HttpServer {
@@ -13,9 +15,17 @@ public class HttpServer {
         app.get("/api/executeCommand", ctx -> {
             String command = ctx.queryParam("command");
             LOGGER.info("Received command: " + command);
+            assert command != null;
             int result = StatsApi.executeCommand(command);
             ctx.result("" + result);
             LOGGER.info("Command executed");
+        });
+
+        app.get("/api/getOnlinePlayerNames", ctx -> {
+            LOGGER.info("Received request for online player names");
+            Collection<String> onlinePlayerNames = StatsApi.getOnlinePlayerNames();
+            ctx.json(onlinePlayerNames);
+            LOGGER.info("Online player names sent");
         });
     }
 

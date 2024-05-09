@@ -40,6 +40,8 @@ dependencies {
 	// Javelin. External package used for the web server.
 	implementation("io.javalin:javalin:${project.javalin_version}")
 	extraLibs("io.javalin:javalin:${project.javalin_version}")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+	extraLibs("com.fasterxml.jackson.core:jackson-databind:2.16.1")
 }
 
 jar {

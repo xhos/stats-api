@@ -5,9 +5,13 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 
 public class StatsApi implements ModInitializer {
@@ -36,15 +40,27 @@ public class StatsApi implements ModInitializer {
 	}
 
 	public static int executeCommand(String command) {
+		if (!command.startsWith("xp query") && !command.startsWith("stats query")) {
+			LOGGER.error("Invalid command: " + command);
+			return -1;
+		}
+
 		LOGGER.info("Executing command: " + command);
 		CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
 		try {
-			int result = dispatcher.execute("stats query " + command, server.getCommandSource());
+			int result = dispatcher.execute(command, server.getCommandSource());
 			LOGGER.info(""+ result);
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("Failed to execute command", e);
 		}
-        return 0;
-    }
+		return 0;
+	}
+
+
+	public static Collection<String> getOnlinePlayerNames() {
+		return server.getPlayerManager().getPlayerList().stream()
+				.map(PlayerEntity::getEntityName)
+				.collect(Collectors.toList());
+	}
 }
