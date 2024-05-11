@@ -41,16 +41,13 @@ public class StatsApi implements ModInitializer {
 
 	public static int executeCommand(String command) {
 		if (!command.startsWith("xp query") && !command.startsWith("stats query")) {
-			LOGGER.error("Invalid command: " + command);
+            LOGGER.error("Invalid command: {}", command);
 			return -1;
 		}
 
-		LOGGER.info("Executing command: " + command);
 		CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
 		try {
-			int result = dispatcher.execute(command, server.getCommandSource());
-			LOGGER.info(""+ result);
-			return result;
+            return dispatcher.execute(command, server.getCommandSource());
 		} catch (Exception e) {
 			LOGGER.error("Failed to execute command", e);
 		}
